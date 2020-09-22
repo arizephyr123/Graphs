@@ -1,4 +1,9 @@
 """
+If you can make a function to return the neighbor of this thing, you can treat the problem as s graph problem
+
+If you can figure out when this item is and is not 'rekated' to other items, graphs
+"""
+"""
 Simple graph implementation
 """
 from util import Stack, Queue  # These may come in handy
@@ -7,48 +12,136 @@ class Graph:
 
     """Represent a graph as a dictionary of vertices mapping labels to edges."""
     def __init__(self):
+        # adjacency list
+        # {vertex_id : set holding edges}
+        # self.vertices = {A: set(B)}
         self.vertices = {}
+
+        # adjacency matrix
+        # more space efficient than adj. list if dense
+        # self.vertices = [
+        # #    a  b   c
+        #     [0, 0, 0], # a
+        #     [0, 0, 0], # b
+        #     [0, 0, 0], # c
+        # ]
+        # self.vertices = []
+
 
     def add_vertex(self, vertex_id):
         """
         Add a vertex to the graph.
         """
-        pass  # TODO
+        # adjacency list time complexity: O(1)
+        if vertex_id not in self.vertices:
+            self.vertices[vertex_id] = set()
+        else:
+            return 
 
+    # adjacency list time complexity: O(n)
+    def delete_vertex(self, vertex_id):
+        # delete the key-value pair
+        # find/remove all references to this vertex
+        for vert in self.vertices:
+            # print(vert, self.vertices[vert])
+            if vert == vertex_id:
+                # print(vert)
+                del self.vertices[vert]
+                return self.delete_vertex(vertex_id)
+            
+        for vert in self.vertices:
+            for edge in  self.vertices[vert]:
+                # print('edge', edge)
+                if edge == vertex_id:
+                    # print('edge = vert_id', edge)
+                    self.vertices[vert].remove(edge)
+                    return self.delete_vertex(vertex_id)
+                    # del edge
+
+    
+
+    # adjacency list time complexity: O(1)
     def add_edge(self, v1, v2):
         """
         Add a directed edge to the graph.
         """
-        pass  # TODO
+        if (v1 or v2) not in self.vertices:
+            print("vertex does not exist")
+            return
+        self.vertices[v1].add(v2)
+
+    # adjacency list time complexity: O(1)
+    def delete_edge(self, v1, v2):
+        pass
 
     def get_neighbors(self, vertex_id):
         """
         Get all neighbors (edges) of a vertex.
         """
-        pass  # TODO
+        for vert in self.vertices:
+            if vert == vertex_id:
+                return self.vertices[vert]
 
     def bft(self, starting_vertex):
         """
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+        q = Queue()
+        q.enqueue(starting_vertex)
+        visited = set()
+        to_print = []
+
+        # while verts waiting in q
+        while q.size() >0:
+            curr_vert = q.dequeue()
+            if curr_vert not in visited:
+                visited.add(curr_vert)
+                to_print.append(curr_vert)
+                print(curr_vert)
+                # print(self.get_neighbors(curr_vert))
+                for neighbor in self.get_neighbors(curr_vert):
+                    q.enqueue(neighbor)
+        # print('bft', to_print)
+        # print('bft', visited)
+
 
     def dft(self, starting_vertex):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
+        stack = Stack()
+        stack.push(starting_vertex)
+        visited = set()
+        to_print = []
 
-    def dft_recursive(self, starting_vertex):
+        while stack.size()>0:
+            curr_vert = stack.pop()
+            if curr_vert not in visited:
+                visited.add(curr_vert)
+                to_print.append(curr_vert)
+                print(curr_vert)
+                for neighbor in self.get_neighbors(curr_vert):
+                    stack.push(neighbor)
+
+        # print('dft visited', visited)
+        # print('dft', to_print)
+
+
+    def dft_recursive(self, starting_vertex, visited=set()):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
-
         This should be done using recursion.
         """
-        pass  # TODO
+        print(starting_vertex)
+        visited.add(starting_vertex)
+        neighbors = self.get_neighbors(starting_vertex)
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                self.dft_recursive(neighbor, visited)
+
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -102,6 +195,8 @@ if __name__ == '__main__':
         {1: {2}, 2: {3, 4}, 3: {5}, 4: {6, 7}, 5: {3}, 6: {3}, 7: {1, 6}}
     '''
     print(graph.vertices)
+    # print(graph.get_neighbors(4))
+    # print(graph.vertices)
 
     '''
     Valid BFT paths:
