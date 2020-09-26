@@ -13,44 +13,40 @@
 
 ## DF can be recursive, but not BF
 
-import sys
-sys.path.insert(0, '/Users/user/Desktop/LambdaPT9/Graphs/projects/graph')
-from graph import Graph
 from util import Stack
 
-
-def earliest_ancestor(ancestors, starting_node, distance=0):
-    lineage_graph = Graph()
-    stack = Stack()
-    stack.push(starting_node)
-    visited = set()
-    # earliest_ancestors = [(path, earliest ancestor)]
-    earliest_ancestors = []
-    path = []
-
-    # create graph
+def earliest_ancestor(ancestors, starting_node):
+    # ancestors = [(parent, child), ...]
+    # ancestor_hashmap = {ancestor/parent: set of children}
+    ancestor_hashmap = {}
     for (parent, child) in ancestors:
-        # add verticies
-        lineage_graph.add_vertex(parent)
-        lineage_graph.add_vertex(child)
-        # add edges
-        lineage_graph.add_edge(child, parent)
+        # parent = parent, child = child
+        # if either ancestor not already in dict, then create entry with empty set as value
+        if parent not in ancestor_hashmap:
+            ancestor_hashmap[parent] = set()
+        if child not in ancestor_hashmap:
+            ancestor_hashmap[child] = set()
+        # add children into sets
+        ancestor_hashmap[parent].add(child)
+    return dft(starting_node, ancestor_hashmap)
 
-    # run DFT, track
-    while stack.size() > 0:
-        print('stack size', stack.size())
-        curr_anc = stack.pop()
-        print('curr_anc', curr_anc)
-        print(f'{curr_anc} in visited? -> {visited}')
-        print('stack size after pop', stack.size())
-        if curr_anc not in visited:
-            visited.add(curr_anc)
-            print(f'{curr_anc} in visited NOW? -> {visited}')
-            path.append(curr_anc)
-            print('path', path)
-            print('parent(s)', lineage_graph.vertices[curr_anc])
-            for parents in lineage_graph.get_neighbors(curr_anc):
-                stack.push(parents)
+
+def dft(starting_node, ancestors):
+    stack = Stack()
+    stack.push([starting_node])
+    visited = set()
+
+    earliest_anc = -1
+
+    while stack.size():
+        curr_path 
+
+
+    return earliest_anc
+
+
+
+    
 
 
 test_ancestors = [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7), (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]

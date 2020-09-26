@@ -1,3 +1,6 @@
+import random
+import time
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -13,9 +16,11 @@ class SocialGraph:
         Creates a bi-directional friendship
         """
         if user_id == friend_id:
-            print("WARNING: You cannot be friends with yourself")
+            # print("WARNING: You cannot be friends with yourself")
+            return False
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
-            print("WARNING: Friendship already exists")
+            # print("WARNING: Friendship already exists")
+            return False
         else:
             self.friendships[user_id].add(friend_id)
             self.friendships[friend_id].add(user_id)
@@ -50,7 +55,13 @@ class SocialGraph:
 
         # Create friendships
         #you could create a list with all possible friendship combinations
-        ## [(1, 2), (2, 3), (3, 4)]
+        ## [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+        all_friend_combos = [
+            for person in persons:
+                for friend in range(person +1)
+        ]
+
+
 
     def get_all_social_paths(self, user_id):
         """
@@ -65,10 +76,29 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
         return visited
 
+def linear_populate(self, num_users, avg_friendships):
+    # reset graph
+    # add users
+
+    total_friendships = num_users * avg_friendships
+    # stop at 
+
+
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
-    print(sg.friendships)
-    connections = sg.get_all_social_paths(1)
-    print(connections)
+
+    start_time = time.time()
+    sg.populate_graph(1000, 5)
+    end_time = time.time()
+
+    print(end_time - start_time)
+
+    start_time = time.time()
+    sg.linear_populate(1000, 5)
+    end_time = time.time()
+
+    print(end_time - start_time)
+    # print(sg.friendships)
+    # connections = sg.get_all_social_paths(1)
+    # print(connections)
