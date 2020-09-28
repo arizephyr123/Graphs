@@ -67,7 +67,7 @@ else:
 # create hash_map with entry for each room
 hash_map = {}
 for num in range(len(room_graph)):
-    hash_map[num] = {0: 0}
+    hash_map[num] = {'n': '?', 's': '?', 'w': '?', 'e': '?'}
 
 
 
@@ -98,32 +98,41 @@ def rev_direc(curr_direct):
 
 
 # puts room moves into hash_map
-def record_room(curr_room, direc, prev_room):
-    print(f'\n**start record room\nfrom {prev_room.id} moved {direc} to {curr_room.id}(CURRENT)')
+def record_room(curr_room, direc, prev_room_id=None):
+    print(f'\n**start record room\nfrom {prev_room_id} moved {direc} to {curr_room.id}(CURRENT)')
     print(f'curr room exits-> {curr_room.get_exits()}')
-
-    # record next in direction from previous room exit
-    hash_map[prev_room.id][direc] = curr_room.id
 
     temp = {}
     print('temp BEFORE', temp)
-    for (k, v) in hash_map[curr_room.id].items():
-        if k in curr_room.get_exits():
-            if temp[k]:
-                pass
-            else:
-                temp[k] = '?'
-    print('temp After', temp)
-        
+    # for (k, v) in hash_map[curr_room.id].items():
+    #     if k in curr_room.get_exits():
+    #         if temp[k]:
+    #             pass
+    #         else:
+    #             temp[k] = '?'
+    # print('temp After', temp)
+
     # record current room exits with curr_room in direction came from
-    opposite_direc = rev_direc(direc)
+    backtrack_direc = rev_direc(direc)
     for ext in curr_room.get_exits():
-        if ext == opposite_direc:
-                temp[ext] = prev_room.id
+        if ext == backtrack_direc:
+            if prev_room_id == None:
+                temp[ext] = '?'
+            else:
+                temp[ext] = prev_room_id
+                # record next in direction from previous room exit
+                hash_map[prev_room_id][direc] = curr_room.id
         else:
             temp[ext] = '?'
     hash_map[curr_room.id] = temp
-    print(f'hash_map[{prev_room.id}][{direc}] = {hash_map[prev_room.id][direc]}\nhash_map[{curr_room.id}][{opposite_direc}] = {hash_map[curr_room.id][opposite_direc]}\n**\n')
+    if prev_room_id is None:
+        print(f'hash_map[{curr_room.id}][{backtrack_direc}] = {hash_map[curr_room.id][backtrack_direc]}\n**\n')
+    else:
+        print(f'hash_map[{prev_room_id}][{direc}] = {hash_map[prev_room_id][direc]}\nhash_map[{curr_room.id}][{backtrack_direc}] = {hash_map[curr_room.id][backtrack_direc]}\n**\n')
+
+
+
+    
 
 
 # moves player in dft, then bft while tracking the moves
@@ -135,6 +144,7 @@ def move_player():
     # get random direction
     rd = rand_direc(exits)
 
+    record_room(room, rd)
     print('current room ', room.id)
     print('exits', exits)
     next_in_rd = room.get_room_in_direction(rd).id if room.get_room_in_direction(rd) else None
@@ -142,7 +152,7 @@ def move_player():
     # print(f'{next_in_rd} in visited? ', next_in_rd in visited_rooms)
     print(f'room in {rd} direction -> {next_in_rd}')
     # print(f'room in {rd} direction -> {next_in_rd}')
-    print('next_in_rd', next_in_rd)
+    # print('next_in_rd', next_in_rd)
         
     while player.travel(rd) is not None:
         # add move to traversal path
@@ -151,17 +161,17 @@ def move_player():
         prev_room = room
         # update room to new room, record and update exits
         room = player.current_room
-        record_room(room, rd, prev_room)
+        record_room(room, rd, prev_room.id)
         exits = room.get_exits()
     
     avail_exits = []
     for ext in avail_exits:
-        if hash_map[curr_room][ext] is not '?':
+        if hash_map[curr_room][ext] is '?':
             avail_exits.append(ext)
     print('avail_exits', avail_exits)
     if len(avail_exits) == 0:
-        bfs(room)
-    else:
+        return bfs(room)
+    if len(avail_exits) > 0:
         return move_player()
     
     print('** move_player STOP **')
